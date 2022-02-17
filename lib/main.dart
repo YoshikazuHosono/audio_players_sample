@@ -31,6 +31,7 @@ final soundList = [
 ];
 
 Timer? crushTimer;
+Timer? noCrushTimer;
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -48,7 +49,7 @@ class MyHomePage extends StatelessWidget {
             ElevatedButton(
                 onPressed: () {
                   var audioCache = AudioCache();
-                  crushTimer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
+                  crushTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
                     final idx = Random().nextInt(soundList.length);
                     audioCache.play(soundList[idx]);
                   });
@@ -61,8 +62,25 @@ class MyHomePage extends StatelessWidget {
                 },
                 child: const Text("stop crush sound")
             ),
-            ElevatedButton(onPressed: () {}, child: const Text("play no crush sound")),
-            ElevatedButton(onPressed: () {}, child: const Text("stop no crush sound")),
+            ElevatedButton(
+                onPressed: () {
+                  var audioMap = Map.fromIterables(
+                      soundList,
+                      soundList.map((e) => AudioCache(fixedPlayer: AudioPlayer())).toList()
+                  );
+                  noCrushTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+                    final idx = Random().nextInt(soundList.length);
+                    audioMap[soundList[idx]]?.play(soundList[idx]);
+                  });
+                },
+                child: const Text("play no crush sound")
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  noCrushTimer?.cancel();
+                },
+                child: const Text("stop no crush sound")
+            ),
           ],
         ),
       ),
